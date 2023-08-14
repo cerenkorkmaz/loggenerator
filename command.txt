@@ -1,0 +1,4 @@
+pyinstaller --onefile --noconsole --additional-hooks-dir=. --icon=icon.ico --add-data="logo.png;." --add-data="logs.txt;." LOGGenerator.py
+
+
+pyinstaller --onefile --noconsole --additional-hooks-dir=. --icon=icon.ico --add-data="logo.png;." --add-data="icon.png;." --add-data="logs.txt;." LogGenerator.py

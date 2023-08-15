@@ -11,13 +11,10 @@ class FormatLog:
     
     @staticmethod
     def generateLog(num_sentences, model_instance):
-        # Open a file to write the logs to
         filename = os.path.join("logs", f"log-{datetime.datetime.now().strftime('%y%m%d%H%M')}-000.log")
         with open(filename, 'w') as file:
-            # Write the header line
             header = 'Date/Time\tSystem Name\tSubsystem Name\tSource\tCode\tLevel\tUser\tText\n'
             file.write(header)
-            # Generate N random logs
             i = 0
             generated_sentences = set()
             date_time = datetime.datetime.now()

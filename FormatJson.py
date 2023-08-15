@@ -4,7 +4,6 @@ import datetime
 import json
 
 class FormatJson:
-     # List of values to use for generating random logs
     sources = ['REHIS', 'JETHA', 'FESOM', 'PODRI', 'BACOL', 'NIRLU', 'LOJEM', 'ZELGA', 'QOVIX', 'DUNIK']
     levels = ['INFO', 'WARN', 'ERROR']
     first_names = ['Aylin', 'Berk', 'Cemre', 'Deniz', 'Elif', 'Firat', 'Gul', 'Hakan', 'Irem', 'Jale']
@@ -25,8 +24,6 @@ class FormatJson:
     def generateJson(num_sentences, model_instance):
         filename = os.path.join("logs", f"logjson-{datetime.datetime.now().strftime('%y%m%d%H%M')}-000.json")
         with open(filename, 'w') as file:
-
-            # Generate N random logs
             i = 0
             generated_sentences = set()
             date_time = datetime.datetime.now()

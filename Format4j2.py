@@ -5,14 +5,9 @@ import datetime
 class Format4j2:
     @staticmethod
     def generate4j2(num_sentences, model_instance):
-    # Generate a unique integer for each run
         unique_id = random.randint(0, 1000)
-
-        # Open a file to write the logs to
         filename = os.path.join("logs", f"log4j2-{datetime.datetime.now().strftime('%d-%m-%Y')}-{unique_id}.log")
         with open(filename, 'w') as file:
-
-            # Generate N random logs
             i = 0
             generated_sentences = set()
             date_time = datetime.datetime.now()

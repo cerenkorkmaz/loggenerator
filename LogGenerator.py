@@ -64,7 +64,7 @@ class LogGenerationProgress:
         self.progress_label.config(font=("TkDefaultFont ",13))
         self.progress_label.place(relx=0.5, rely=0.25, anchor='center')
 
-        self.gif = self.loadGif("waiting_icon.gif")
+        self.gif = self.loadGif(resource_path("waiting_icon.gif"))
         self.gif_index = 0
         self.gif_label = tk.Label(self.master)
         self.gif_label.place(relx=0.5, rely=0.55, anchor='center')

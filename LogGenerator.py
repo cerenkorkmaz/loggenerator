@@ -78,19 +78,18 @@ class LogGenerationProgress:
         self.master.attributes('-topmost',True)
         self.master.focus_force()
 
-
 class LogGenerator:
     def onClose(self):
         if self.generation_in_progress:
-            response = messagebox.askquestion("!", "Do you want to stop log generation?", icon='question')
-            if response:
-                self.stop_generation.set()  # Signal the thread to stop
-                #self.generation_thread.join() #bu cok uzun surduruyo niye idk dondu
-            else:
-                pass
+            #response = messagebox.askquestion("", "Do you want to stop log generation?", icon='question')
+            #if response == 'yes':
+            #    #self.stop_generation.set()  # Signal the thread to stop
+            #    self.logGenerator.destroy()  #successfull penceresinin çıkmasını engelle
+            #    #self.generation_thread.join() #bu cok uzun surduruyo niye idk dondu
+            #else:
+            pass
         else:
             self.logGenerator.destroy()  #successfull penceresinin çıkmasını engelle
-
 
     def onSelect(self, *args):
         self.selected_format = self.format_var.get()
@@ -98,7 +97,7 @@ class LogGenerator:
             self.num_logs_label.pack()
             self.num_logs_entry.pack()
             self.generate_button.pack()
-
+            
     def checkEntry(self, *args):
         if not self.num_logs_entry.get():
             self.generate_button.configure(state='disabled')
@@ -114,52 +113,62 @@ class LogGenerator:
             widget.configure(state='normal')        
 
     def generate(self):
-        if self.generation_thread is None or not self.generation_thread.is_alive():
-            self.generation_in_progress = True
-            self.disable_widgets()  # Disable the whole window
-
-            progress_window = tk.Toplevel(self.logGenerator)  # Create a new top-level window
-            progress_window.title("Log Generation Progress")
-            progress = LogGenerationProgress(progress_window)
-
-            self.generation_thread = threading.Thread(target=self.generate_async, args=(progress,))
-            self.generation_thread.start()
+        if self.generation_in_progress:
+            return
+        #if self.generation_thread is None: # or not self.generation_thread.is_alive():
+        self.generation_in_progress = True
+        self.disable_widgets()  # Disable the whole window
+        progress_window = tk.Toplevel(self.logGenerator)  # Create a new top-level window
+        progress_window.title("Log Generation Progress")
+        progress = LogGenerationProgress(progress_window)
+        self.generation_thread = threading.Thread(target=self.generate_async, args=(progress,)) #.start()
+        self.generation_thread.start()
 
     def generate_async(self, progress):
         try:
-            while not self.stop_generation.is_set():
-                try:
-                    if not os.path.exists("logs"):
-                        os.mkdir("logs")
-                except Exception as e:
-                    print("Error creating directory:", e)
-
-                model_instance = Model()
-                num_logs = self.num_logs_entry.get()
-
-                try:
-                    num_logs = int(num_logs)
-                    format = self.format_var.get()
-                    if num_logs <= 0:
-                        self.num_logs_entry.delete(0, tk.END)
-                        messagebox.showerror("Error", "Number of logs must be a positive integer.")
-                    else:
-                        if format == "log":
-                            FormatLog.generateLog(num_logs, model_instance)
-                        elif format == "4j2":
-                            Format4j2.generate4j2(num_logs, model_instance)
-                        elif format == "json":
-                            FormatJson.generateJson(num_logs, model_instance)
-                        else:
-                            messagebox.showerror("Error", "Unsupported format")
-                except ValueError:
+            try:
+                if not os.path.exists("logs"):
+                    os.mkdir("logs")
+            except Exception as e:
+                print("Error creating directory:", e)
+            
+            model_instance = Model()
+            num_logs = self.num_logs_entry.get()
+            try:
+                num_logs = int(num_logs)
+                format = self.format_var.get()
+                if num_logs <= 0:
                     self.num_logs_entry.delete(0, tk.END)
-                    messagebox.showerror("Error", "Number of logs must be a valid integer.")
-        finally:
-            self.logGenerator.after(1000, progress.master.destroy)  # Close the progress window after 1 second when done
+                    messagebox.showerror("Error", "Number of logs must be a positive integer.")
+                else:
+                    if format == "log":
+                        FormatLog.generateLog(num_logs, model_instance)
+                    elif format == "4j2":
+                        Format4j2.generate4j2(num_logs, model_instance)
+                    elif format == "json":
+                        FormatJson.generateJson(num_logs, model_instance)
+                    else:
+                        messagebox.showerror("Error", "Unsupported format")
+            except ValueError:
+                self.num_logs_entry.delete(0, tk.END)
+                messagebox.showerror("Error", "Number of logs must be a valid integer.")
+
+            print("bitti")
+            #self.generation_thread = None
+            self.logGenerator.after(0, progress.master.destroy)  # Close the progress window when done
             self.generation_in_progress = False
             messagebox.showinfo("INFO","Logs generated successfully!")
             self.enable_widgets()
+
+        except Exception as e:
+            print("Exception: ",e)
+        #finally:
+        #    print("bitti")
+        #    #self.generation_thread = None
+        #    self.logGenerator.after(0, progress.master.destroy)  # Close the progress window when done
+        #    self.generation_in_progress = False
+        #    messagebox.showinfo("INFO","Logs generated successfully!")
+        #    self.enable_widgets()
         
     def __init__(self, logGenerator):
         self.logGenerator = logGenerator
@@ -207,6 +216,6 @@ class LogGenerator:
         self.logGenerator.attributes('-topmost',True)
         self.logGenerator.focus_force()
 
+        #self.stop_generation = threading.Event()
+        #self.generation_thread = None
         self.generation_in_progress = False
-        self.generation_thread = None
-        self.stop_generation = threading.Event()
